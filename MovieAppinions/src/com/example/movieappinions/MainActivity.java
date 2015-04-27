@@ -26,7 +26,7 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		Parse.initialize(this, "UKvWFT7dEDDQcVWfbvboG1n9r2MOz3Jisi06xi3n", "M7j0YLUlo4cGsoLqyps4a0JkfpccZmSPZMq9IL3s");
+		Parse.initialize(this, APIKeys.PARSE_APPLICATION_KEY, APIKeys.PARSE_CLIENT_KEY);
         //getActionBar().setTitle("Login");
         //ParseUser.logOut();
         currentUser = ParseUser.getCurrentUser();
