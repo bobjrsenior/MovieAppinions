@@ -2,14 +2,13 @@ package com.example.movieappinions;
 
 /**
  * Hold data about a movie retrieved from Rotten Tomatoes
- *
  */
 public class Movie {
 
 	public String title;
 	public String year;
 	public String rating;
-	public String raRating;
+	public int raRating;
 	public String plot;
 	public String thumbnailURL;
 	public String posterURL;
@@ -18,7 +17,7 @@ public class Movie {
 		
 	}
 
-	public Movie(String title, String year, String rating, String raRating,
+	public Movie(String title, String year, String rating, int raRating,
 			String plot, String thumbnailURL, String posterURL) {
 		super();
 		this.title = title;
@@ -54,11 +53,11 @@ public class Movie {
 		this.rating = rating;
 	}
 
-	public String getRaRating() {
+	public int getRaRating() {
 		return raRating;
 	}
 
-	public void setRaRating(String raRating) {
+	public void setRaRating(int raRating) {
 		this.raRating = raRating;
 	}
 

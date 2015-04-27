@@ -48,17 +48,28 @@ import android.widget.Toast;
  */
 public class MovieListFragment extends Fragment {
 	
-	 EditText itemText;
-	 ListView textListView;
-	 Intent i;
-	 ParseQueryAdapter<ParseObject> adapter;
-	 ArrayAdapter<String> adapterTest;
-	 AlertDialog alertDialog;
-	 AlertDialog.Builder alertDialogBuilder;
+	String type;
+	String searchTerm;
+	EditText itemText;
+	ListView textListView;
+	Intent i;
+	ParseQueryAdapter<ParseObject> adapter;
+	ArrayAdapter<String> adapterTest;
+	AlertDialog alertDialog;
+	AlertDialog.Builder alertDialogBuilder;
 	 
 	private OnFragmentInteractionListener mListener;
 
-	 
+	public MovieListFragment(String type){
+		super();
+		this.type = type;
+	}
+	
+	public MovieListFragment(String type, String searchTerm){
+		super();
+		this.type = type;
+		this.searchTerm = searchTerm;
+	}
 	 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -92,13 +103,18 @@ public class MovieListFragment extends Fragment {
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		Log.d("demo", "onActivityCreated");
+		alertDialogBuilder = new AlertDialog.Builder(mListener.getContext());
+		alertDialogBuilder.setTitle("Loading Movies...")
+			.setIcon(R.drawable.app_logo)
+			.setMessage("")
+			.setCancelable((false));
 
 	}
 
 	@Override
 	public void onStart() {
 		super.onStart();
-
+		//showDialog();
 		ArrayList<String> contacts = new ArrayList<String>();
 		adapterTest = new ArrayAdapter<String>(mListener.getContext(), android.R.layout.simple_list_item_1, contacts);
 		
@@ -118,7 +134,7 @@ public class MovieListFragment extends Fragment {
                                new String[]{id}, null);
                      while (pCur.moveToNext()) {
                          String phoneNo = pCur.getString(pCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-                         contacts.add(name + phoneNo);
+                         contacts.add(name + " : " + phoneNo);
                          //Toast.makeText(mListener.getContext(), "Name: " + name + ", Phone No: " + phoneNo, Toast.LENGTH_SHORT).show();
                      }
                     pCur.close();
@@ -127,8 +143,24 @@ public class MovieListFragment extends Fragment {
         }
         textListView = (ListView) getView().findViewById(R.id.contacts_list);
         textListView.setAdapter(adapterTest);
+        
+        //alertDialog.dismiss();
 	}
 
+	/**
+	 * Retrieves all contacts and how many movies they have reviewed
+	 */
+	private void retrieveContacts(){
+		
+	}
+	
+	/**
+	 * Retrieved movies related to the search term
+	 */
+	private void retrieveMovies(){
+		
+	}
+	
 	public interface OnFragmentInteractionListener {
 		public void selectedItem(ParseObject obj);
 		public Context getContext();
