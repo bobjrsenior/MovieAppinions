@@ -5,6 +5,7 @@ package com.example.movieappinions;
  */
 public class Movie {
 
+	public int id;
 	public String title;
 	public String year;
 	public String rating;
@@ -17,9 +18,10 @@ public class Movie {
 		
 	}
 
-	public Movie(String title, String year, String rating, int raRating,
+	public Movie(int id, String title, String year, String rating, int raRating,
 			String plot, String thumbnailURL, String posterURL) {
 		super();
+		this.id = id;
 		this.title = title;
 		this.year = year;
 		this.rating = rating;
@@ -27,6 +29,14 @@ public class Movie {
 		this.plot = plot;
 		this.thumbnailURL = thumbnailURL;
 		this.posterURL = posterURL;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
 	}
 
 	public String getTitle() {

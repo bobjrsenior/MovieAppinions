@@ -24,6 +24,7 @@ public class JSONUtils {
 		 */
 		public static Movie parseMovie(JSONObject root) throws JSONException{
 			Movie movie = new Movie();
+			movie.setId(root.getInt("id"));
 			movie.setTitle(root.getString("title"));
 			movie.setYear(root.getString("year"));
 			movie.setRating(root.getString("mpaa_rating"));

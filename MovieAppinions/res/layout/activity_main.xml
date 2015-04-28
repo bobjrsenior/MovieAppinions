@@ -9,10 +9,12 @@
 
     <ImageView
         android:id="@+id/imageView1"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_weight="0.20"
+        android:layout_weight="1"
+        android:contentDescription="Movie Appinions Logo"
+        android:maxHeight="200dp"
         android:paddingBottom="50dp"
         android:src="@drawable/app_logo" />
 
@@ -40,8 +42,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="0.20" >
+        android:layout_height="wrap_content" >
 
         <TextView
             android:id="@+id/textView2"
@@ -58,13 +59,12 @@
             android:ems="10"
             android:hint="Enter Password Here"
             android:inputType="textPassword" />
-
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="0.20" >
+        android:layout_height="0dp"
+        android:layout_weight="1" >
 
         <Button
             android:id="@+id/button1"
@@ -81,7 +81,6 @@
             android:layout_gravity="center"
             android:layout_weight="1"
             android:text="Create New" />
-
     </LinearLayout>
 
 </LinearLayout>

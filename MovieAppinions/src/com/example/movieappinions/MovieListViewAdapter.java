@@ -5,8 +5,10 @@ import java.util.List;
 import com.squareup.picasso.Picasso;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
@@ -44,10 +46,19 @@ public class MovieListViewAdapter  extends ArrayAdapter<Movie> {
 		((TextView) convertView.findViewById(R.id.movie_title)).setText(movies.get(position).getTitle());
 		((TextView) convertView.findViewById(R.id.movie_release_date)).setText(movies.get(position).getYear());
 		((TextView) convertView.findViewById(R.id.movie_rating)).setText(movies.get(position).getRating());
-		((TextView) convertView.findViewById(R.id.movie_ra_rating)).setText(movies.get(position).getRaRating());
+		Log.d("demo", "G:" + movies.get(position).getRaRating());
+		((TextView) convertView.findViewById(R.id.movie_ra_rating)).setText(movies.get(position).getRaRating() + "");
 		((TextView) convertView.findViewById(R.id.movie_plot)).setText(movies.get(position).getPlot());
 		Picasso.with(c).load(movies.get(position).getThumbnailURL()).error(R.drawable.ic_launcher).into((ImageView) convertView.findViewById(R.id.movie_poster));
 		
+		
+		convertView.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				
+			}
+		});
 		return convertView;
 	}
 

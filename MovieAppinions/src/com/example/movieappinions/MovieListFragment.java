@@ -1,9 +1,20 @@
 package com.example.movieappinions;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.json.JSONException;
 import org.w3c.dom.Text;
+import org.xml.sax.SAXException;
+import org.xmlpull.v1.XmlPullParserException;
+
+
 
 import com.parse.FindCallback;
 import com.parse.ParseException;
@@ -22,6 +33,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.util.Log;
@@ -54,7 +66,8 @@ public class MovieListFragment extends Fragment {
 	ListView textListView;
 	Intent i;
 	ParseQueryAdapter<ParseObject> adapter;
-	ArrayAdapter<String> adapterTest;
+	ArrayAdapter<Movie> moviesAdapter;
+	ArrayList<Movie> movies;
 	AlertDialog alertDialog;
 	AlertDialog.Builder alertDialogBuilder;
 	 
@@ -114,36 +127,13 @@ public class MovieListFragment extends Fragment {
 	@Override
 	public void onStart() {
 		super.onStart();
-		//showDialog();
-		ArrayList<String> contacts = new ArrayList<String>();
-		adapterTest = new ArrayAdapter<String>(mListener.getContext(), android.R.layout.simple_list_item_1, contacts);
-		
-		ContentResolver cr = mListener.getContentResolver();
-        Cursor cur = cr.query(ContactsContract.Contacts.CONTENT_URI,
-                null, null, null, null);
-        if (cur.getCount() > 0) {
-            while (cur.moveToNext()) {
-                  String id = cur.getString(cur.getColumnIndex(ContactsContract.Contacts._ID));
-                  String name = cur.getString(cur.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
-                  if (Integer.parseInt(cur.getString(
-                        cur.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER))) > 0) {
-                     Cursor pCur = cr.query(
-                               ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
-                               null,
-                               ContactsContract.CommonDataKinds.Phone.CONTACT_ID +" = ?",
-                               new String[]{id}, null);
-                     while (pCur.moveToNext()) {
-                         String phoneNo = pCur.getString(pCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-                         contacts.add(name + " : " + phoneNo);
-                         //Toast.makeText(mListener.getContext(), "Name: " + name + ", Phone No: " + phoneNo, Toast.LENGTH_SHORT).show();
-                     }
-                    pCur.close();
-                }
-            }
-        }
-        textListView = (ListView) getView().findViewById(R.id.contacts_list);
-        textListView.setAdapter(adapterTest);
-        
+		showDialog();
+		Log.d("demo", "G:" + type);
+		Log.d("demo", "onstart");
+		if(type.equals("Search")){
+			Log.d("demo", "startRetrieve");
+			retrieveMovies();
+		}
         //alertDialog.dismiss();
 	}
 
@@ -158,7 +148,9 @@ public class MovieListFragment extends Fragment {
 	 * Retrieved movies related to the search term
 	 */
 	private void retrieveMovies(){
-		
+		String url = "http://api.rottentomatoes.com/api/public/v1.0/movies.json?apikey=" + APIKeys.ROTTEN_TOMATOES_API_KEY + "&q=" + searchTerm + "&page_limit=10";
+		Log.d("Demo", url);
+		new GetMovies().execute(url);
 	}
 	
 	public interface OnFragmentInteractionListener {
@@ -172,9 +164,62 @@ public class MovieListFragment extends Fragment {
 	
 	public void showDialog(){
 		alertDialog = alertDialogBuilder.create();
-		alertDialog.show();
+		//alertDialog.show();
 
 	}
 	
+	public class GetMovies extends AsyncTask<String, Void, ArrayList<Movie>>{
+
 	
+		public GetMovies() {
+
+		}
+		
+		
+		@Override
+		protected ArrayList<Movie> doInBackground(String... params) {
+			Log.d("demo", "start async");
+			try {
+				URL url = new URL(params[0]);
+				HttpURLConnection con = (HttpURLConnection) url.openConnection();
+				con.setRequestMethod("GET");
+				con.connect();
+				int statusCode = con.getResponseCode();
+				if(statusCode == HttpURLConnection.HTTP_OK){
+					BufferedReader reader = new BufferedReader(new InputStreamReader(con.getInputStream()));
+                    StringBuilder sb = new StringBuilder();
+                    String line;
+                    while((line = reader.readLine()) != null){
+                            sb.append(line);
+                    }
+                    return JSONUtils.MovieParser.parseMovies(sb.toString());
+				}
+				else{
+					Log.d("demo", "" + statusCode);
+				}
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(ArrayList<Movie> result) {
+			super.onPostExecute(result);
+			Log.d("demo","tt");
+			if(result != null){
+				movies = result;
+				moviesAdapter = new MovieListViewAdapter(mListener.getContext(), R.layout.movie_list_item, movies);
+				((ListView) getActivity().findViewById(R.id.contacts_list)).setAdapter(moviesAdapter);
+			}
+			
+			//alertDialog.dismiss();
+		}	
+	}
 }
