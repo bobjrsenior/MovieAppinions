@@ -164,7 +164,7 @@ public class MovieListFragment extends Fragment {
 	
 	public void showDialog(){
 		alertDialog = alertDialogBuilder.create();
-		//alertDialog.show();
+		alertDialog.show();
 
 	}
 	
@@ -219,7 +219,7 @@ public class MovieListFragment extends Fragment {
 				((ListView) getActivity().findViewById(R.id.contacts_list)).setAdapter(moviesAdapter);
 			}
 			
-			//alertDialog.dismiss();
+			alertDialog.dismiss();
 		}	
 	}
 }
