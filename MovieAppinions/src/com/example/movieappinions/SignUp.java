@@ -31,7 +31,7 @@ public class SignUp extends Activity {
 		lastName = (EditText) findViewById(R.id.editText2);
 		phoneNumber =(EditText) findViewById(R.id.editText3);
 		cancel = (Button) findViewById(R.id.button2);
-		create = (Button) findViewById(R.id.button1);
+		create = (Button) findViewById(R.id.searchButton);
 		
 		cancel.setOnClickListener(new OnClickListener() {
 
@@ -98,7 +98,6 @@ public class SignUp extends Activity {
 	}
 	@Override
 	public void onBackPressed() {
-		// TODO Auto-generated method stub
 		super.onBackPressed();
 		finish();
 	}

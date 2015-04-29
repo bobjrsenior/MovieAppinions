@@ -16,4 +16,7 @@
     <string name="fullPlot">Full Plot:</string>
     <string name="saveButton">Save</string>
     <string name="friendsButton">Friend\'s Review</string>
+    <string name="searchForAMovie">Enter Search Term:</string>
+    <string name="exampleSearchTerm">Toy Story</string>
+    <string name="searchButton">Search</string>
 </resources>

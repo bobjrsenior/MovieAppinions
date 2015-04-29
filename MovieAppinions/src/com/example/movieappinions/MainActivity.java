@@ -36,7 +36,7 @@ public class MainActivity extends Activity {
         }
         phoneNumber = (EditText) findViewById(R.id.editText1);
 		password = (EditText) findViewById(R.id.editText2);
-        login = (Button) findViewById(R.id.button1);
+        login = (Button) findViewById(R.id.loginButton);
         create = (Button) findViewById(R.id.button2);
         
         login.setOnClickListener(new OnClickListener() {

@@ -68,7 +68,7 @@
         android:layout_weight="1" >
 
         <Button
-            android:id="@+id/button1"
+            android:id="@+id/loginButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"

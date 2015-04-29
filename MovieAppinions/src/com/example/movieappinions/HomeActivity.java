@@ -79,7 +79,7 @@ public class HomeActivity extends Activity implements MovieListFragment.OnFragme
 				//Intent i = new Intent(HomeActivity.this, HomeActivity.class);
 				//startActivity(i);			
 				getFragmentManager().beginTransaction()
-				.add(R.id.LinearLayout1, new MovieListFragment("Search", "Toy"), "movie_list")
+				.add(R.id.LinearLayout1, new MovieSearchFragment(), "movie_search")
 				.addToBackStack("movie_list")
 				.commit();
 				layout1.setVisibility(View.GONE);
