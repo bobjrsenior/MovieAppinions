@@ -1,5 +1,7 @@
 package com.example.movieappinions;
 
+import com.parse.ParseObject;
+
 public class Contact {
 	
 	private String name;
@@ -14,6 +16,12 @@ public class Contact {
 	public Contact(String name, String number) {
 		this.name = name;
 		this.number = number;
+	}
+	
+	public Contact(ParseObject obj){
+		this.name = obj.getString("name");
+		this.number = obj.getString("phoneNum");
+		this.reviews = 0;//obj.getInt("reviews");
 	}
 	
 	public Contact(){
@@ -36,6 +44,10 @@ public class Contact {
 	}
 	public void setReviews(int reviews) {
 		this.reviews = reviews;
+	}
+	@Override
+	public String toString() {
+		return name + "  " + reviews;
 	}
 	
 	

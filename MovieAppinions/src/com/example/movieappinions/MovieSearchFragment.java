@@ -1,6 +1,14 @@
 package com.example.movieappinions;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
+import com.example.movieappinions.MovieListFragment.OnFragmentInteractionListener;
+
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -10,6 +18,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 /**
  * A simple {@link Fragment} subclass. Use the
@@ -18,16 +27,10 @@ import android.widget.EditText;
  *
  */
 public class MovieSearchFragment extends Fragment {
-	// TODO: Rename parameter arguments, choose names that match
-	// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-	private static final String ARG_PARAM1 = "param1";
-	private static final String ARG_PARAM2 = "param2";
-	
+
 	private EditText searchTerm;
 
-	// TODO: Rename and change types of parameters
-	private String mParam1;
-	private String mParam2;
+	private OnFragmentInteractionListener mListener;
 
 	/**
 	 * Use this factory method to create a new instance of this fragment using
@@ -42,10 +45,6 @@ public class MovieSearchFragment extends Fragment {
 	// TODO: Rename and change types and number of parameters
 	public static MovieSearchFragment newInstance(String param1, String param2) {
 		MovieSearchFragment fragment = new MovieSearchFragment();
-		Bundle args = new Bundle();
-		args.putString(ARG_PARAM1, param1);
-		args.putString(ARG_PARAM2, param2);
-		fragment.setArguments(args);
 		return fragment;
 	}
 
@@ -56,9 +55,16 @@ public class MovieSearchFragment extends Fragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		if (getArguments() != null) {
-			mParam1 = getArguments().getString(ARG_PARAM1);
-			mParam2 = getArguments().getString(ARG_PARAM2);
+	}
+	
+	@Override
+	public void onAttach(Activity activity) {
+		super.onAttach(activity);
+		try {
+			mListener = (OnFragmentInteractionListener) activity;
+		} catch (ClassCastException e) {
+			throw new ClassCastException(activity.toString()
+					+ " must implement OnFragmentInteractionListener");
 		}
 	}
 
@@ -78,16 +84,30 @@ public class MovieSearchFragment extends Fragment {
 			
 			@Override
 			public void onClick(View v) {
-				InputMethodManager mgr = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-		        mgr.hideSoftInputFromWindow(searchTerm.getWindowToken(), 0);
-				getFragmentManager().beginTransaction()
-				.replace(R.id.LinearLayout1, new MovieListFragment("Search", searchTerm.getText().toString()), "movie_list")
-				.addToBackStack("movie_list")
-				.commit();
+				if(!mListener.isConnectedOnline()){
+					Toast.makeText(mListener.getContext(), "Not Connected to Internet", Toast.LENGTH_LONG).show();
+				}
+				else{
+					String search = searchTerm.getText().toString().trim();
+					if(search.equals("")){
+						search = "Toy+Story";
+					}
+					else{
+						try {
+							search = URLEncoder.encode(search, "UTF-8");
+						} catch (UnsupportedEncodingException e) {
+	
+						}
+					}
+					InputMethodManager mgr = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+			        mgr.hideSoftInputFromWindow(searchTerm.getWindowToken(), 0);
+					getFragmentManager().beginTransaction()
+					.replace(R.id.LinearLayout1, new MovieListFragment("Search", search), "movie_list")
+					.addToBackStack("movie_list")
+					.commit();
+				}
 			}
 		});
 	}
-	
-	
 
 }

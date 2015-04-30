@@ -6,6 +6,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.util.Log;
+
 public class JSONUtils {
 	public static class MovieParser{
 		/**
@@ -25,6 +27,8 @@ public class JSONUtils {
 		public static Movie parseMovie(JSONObject root) throws JSONException{
 			Movie movie = new Movie();
 			movie.setId(root.getInt("id"));
+			JSONObject links = root.getJSONObject("links");
+			movie.setRaURL(links.getString("alternate"));
 			movie.setTitle(root.getString("title"));
 			movie.setYear(root.getString("year"));
 			movie.setRating(root.getString("mpaa_rating"));
@@ -32,9 +36,16 @@ public class JSONUtils {
 			movie.setRaRating((int) ((ratings.getInt("audience_score") + ratings.getInt("critics_score")) * .5));
 			movie.setPlot(root.getString("synopsis"));
 			JSONObject posters = root.getJSONObject("posters");
-			movie.setThumbnailURL(posters.getString("thumbnail"));
-			//Get actual size out of poster url since it only links small sizes
-			movie.setPosterURL(movie.getThumbnailURL());
+			String poster = posters.getString("thumbnail");
+			String thumbnail = poster;
+			if(poster.charAt(7) == 'r'){
+				poster = "http://" + poster.substring(64);
+				Log.d("demo", "Poster: " + thumbnail);
+				thumbnail = "http://" + thumbnail.substring(64, thumbnail.length() - 7) + "pro.jpg";
+			}
+			movie.setThumbnailURL(thumbnail);
+			Log.d("demo", "Poster: " + thumbnail);
+			movie.setPosterURL(poster);
 			return movie;
 		}
 		

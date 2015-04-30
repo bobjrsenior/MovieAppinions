@@ -7,7 +7,10 @@ import com.parse.ParseException;
 import com.parse.ParseUser;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -31,7 +34,8 @@ public class MainActivity extends Activity {
         //ParseUser.logOut();
         currentUser = ParseUser.getCurrentUser();
         if(currentUser != null){
-        	Intent i = new Intent(getBaseContext(), MainActivity.class);
+        	Intent i = new Intent(getBaseContext(), HomeActivity.class);
+        	finish();
 			startActivity(i);        	
         }
         phoneNumber = (EditText) findViewById(R.id.editText1);
@@ -43,6 +47,9 @@ public class MainActivity extends Activity {
 			
 			@Override
 			public void onClick(View v) {
+				if(!isConnectedOnline()){
+					Toast.makeText(MainActivity.this, "Not Connected to Internet", Toast.LENGTH_LONG).show();
+				}
 				if(currentUser != null){
 					Toast.makeText(MainActivity.this, "Already Logged in to: " + currentUser.getUsername(), Toast.LENGTH_LONG).show();
 				}
@@ -63,6 +70,7 @@ public class MainActivity extends Activity {
 								Toast.makeText(MainActivity.this, "Succesfully Logged In", Toast.LENGTH_LONG).show();
 								currentUser = ParseUser.getCurrentUser();
 								Intent i = new Intent(getBaseContext(),HomeActivity.class);
+								finish();
 								startActivity(i);
 							}
 							else{
@@ -90,12 +98,20 @@ public class MainActivity extends Activity {
 		currentUser = ParseUser.getCurrentUser();
 		if(ParseUser.getCurrentUser() != null){
 			Intent i = new Intent(getBaseContext(), HomeActivity.class);
+			finish();
 			startActivity(i);
 		}
 		super.onResume();
 	}
     
-    
+	private boolean isConnectedOnline(){
+		ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+		if(networkInfo != null && networkInfo.isConnected()){
+			return true;
+		}
+		return false;
+	}
 		
 		
 }

@@ -1,5 +1,6 @@
 package com.example.movieappinions;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.parse.FindCallback;
@@ -15,6 +16,8 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.opengl.Visibility;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -25,6 +28,7 @@ import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 public class HomeActivity extends Activity implements MovieListFragment.OnFragmentInteractionListener{
 
@@ -59,17 +63,28 @@ public class HomeActivity extends Activity implements MovieListFragment.OnFragme
 			
 			@Override
 			public void onClick(View v) {
-				Intent i = new Intent(HomeActivity.this, HomeActivity.class);
-				startActivity(i);
-				//
+				//Intent i = new Intent(HomeActivity.this, HomeActivity.class);
+				//startActivity(i);
+				if(!isConnectedOnline()){
+					Toast.makeText(HomeActivity.this, "Not Connected to Internet", Toast.LENGTH_LONG).show();
+				}
+				else{
+					
+				}
 			}
 		});
 		favorites.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
-				Intent i = new Intent(HomeActivity.this, HomeActivity.class);
-				startActivity(i);				
+				//Intent i = new Intent(HomeActivity.this, HomeActivity.class);
+				//startActivity(i);			
+				if(!isConnectedOnline()){
+					Toast.makeText(HomeActivity.this, "Not Connected to Internet", Toast.LENGTH_LONG).show();
+				}
+				else{
+					
+				}
 			}
 		});
 		search.setOnClickListener(new OnClickListener() {
@@ -92,16 +107,29 @@ public class HomeActivity extends Activity implements MovieListFragment.OnFragme
 			
 			@Override
 			public void onClick(View v) {
-				Intent i = new Intent(HomeActivity.this, HomeActivity.class);
-				startActivity(i);				
+				if(!isConnectedOnline()){
+					Toast.makeText(HomeActivity.this, "Not Connected to Internet", Toast.LENGTH_LONG).show();
+				}
+				else{
+					getFragmentManager().beginTransaction()
+					.add(R.id.LinearLayout1, new MovieListFragment("Friends"), "contacts_list")
+					.addToBackStack("contacts_list")
+					.commit();
+					layout1.setVisibility(View.GONE);
+					layout2.setVisibility(View.GONE);
+					layout3.setVisibility(View.GONE);
+					layout4.setVisibility(View.GONE);	
+				}
 			}
 		});
 		logout.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
+				Intent i = new Intent(HomeActivity.this, MainActivity.class);
 				ParseUser.logOut();
-				finish();				
+				finish();
+				startActivity(i);				
 			}
 		});
 		sync.setOnClickListener(new OnClickListener() {
@@ -110,8 +138,13 @@ public class HomeActivity extends Activity implements MovieListFragment.OnFragme
 			public void onClick(View v) {
 				//Intent i = new Intent(HomeActivity.this, HomeActivity.class);
 				//startActivity(i);
-				dialog.show();
-				new MergeContacts().execute();
+				if(!isConnectedOnline()){
+					Toast.makeText(HomeActivity.this, "Not Connected to Internet", Toast.LENGTH_LONG).show();
+				}
+				else{
+					dialog.show();
+					new MergeContacts().execute();
+				}
 			}
 		});
 		
@@ -129,42 +162,54 @@ public class HomeActivity extends Activity implements MovieListFragment.OnFragme
 			}
 		}
 		else{
-			Intent i = new Intent(this, MainActivity.class);
-			ParseUser.logOut();
-			startActivity(i);
+			finish();
 			super.onBackPressed();
 		}
 	}
 
 	public class MergeContacts extends AsyncTask<Void, Integer, Void>{
-
+		ArrayList<ParseObject> users;
 		@Override
-		protected Void doInBackground(Void... params) {
+		protected synchronized Void doInBackground(Void... params) {
 			
 			//Remove old contacts
 			ParseQuery<ParseObject> query = ParseQuery.getQuery("Contacts");
 			query.whereEqualTo("owner", ParseUser.getCurrentUser().getUsername());
 			query.setLimit(1000);
-			query.findInBackground(new FindCallback<ParseObject>() {
-				@Override
-				public void done(List<ParseObject> contactsList, ParseException e) {
-			        if (e == null) {
-			            Log.d("score", "Retrieved " + contactsList.size() + " contacts");
-			            
-			        } else {
-			            Log.d("score", "Error: " + e.getMessage());
-			        }
-			        for(int a = 0; a < contactsList.size(); a ++){
-			        	try {
-							contactsList.get(a).delete();
-						} catch (ParseException e1) {
-							e1.printStackTrace();
-						}
-			        	publishProgress((int) (10f * (a / contactsList.size())));
-			        }
-					
+			ArrayList<ParseObject> contactsList = null;
+			try {
+				contactsList = (ArrayList<ParseObject>) query.find();
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        	for(int a = 0; a < contactsList.size(); a ++){
+	        	try {
+					contactsList.get(a).delete();
+				} catch (ParseException e1) {
+					e1.printStackTrace();
 				}
-			});
+	        	publishProgress((int) (10f * (a / contactsList.size())));
+	        }
+			
+			query = ParseQuery.getQuery("_User");
+			query.whereNotEqualTo("username", ParseUser.getCurrentUser().getUsername());
+			query.setLimit(1000);
+			try {
+				users = (ArrayList<ParseObject>) query.find();
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			publishProgress(20);
+			syncContacts();
+
+			dialog.dismiss();
+			return null;
+		}
+		
+		protected void syncContacts(){
+			Log.d("demo", "GG");
 			ContentResolver cr = getContentResolver();
 	        Cursor cur = cr.query(ContactsContract.Contacts.CONTENT_URI,
 	                null, null, null, null);
@@ -183,22 +228,30 @@ public class HomeActivity extends Activity implements MovieListFragment.OnFragme
 	                               new String[]{id}, null);
 	                     if (pCur.moveToNext()) {
 	                         String phoneNum = pCur.getString(pCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+	                         Log.d("phoneNum", phoneNum);
+	                         if(phoneNum.length() > 10){
+	                        	 phoneNum = phoneNum.substring(phoneNum.length() - 10);
+	                         }
 	                         ParseObject contact = new ParseObject("Contacts");
+	                         Log.d("demo", ":" + (contact == null));
 	                         contact.add("owner", ParseUser.getCurrentUser().getUsername());
 	                         contact.add("name", name);
 	                         contact.add("phoneNum", phoneNum);
-	                         contact.saveInBackground();
+	                         for(ParseObject obj : users){
+	             				Log.d("demo","G:" +  obj.getString("username") + ":" + phoneNum);
+	             				if(obj.getString("username").equals(phoneNum)){
+	             					contact.saveInBackground();
+	             				}
+	             			}
 	                     }
 	                     pCur.close();
 	                }
-                     publishProgress(10 + (int)(90f * current / count));
+                     publishProgress(20 + (int)(90f * current / count));
 
                      current ++;
 	            }
 	        }
 			cur.close();
-			
-			return null;
 		}
 
 		@Override
@@ -210,7 +263,6 @@ public class HomeActivity extends Activity implements MovieListFragment.OnFragme
 		@Override
 		protected void onPostExecute(Void result) {
 			super.onPostExecute(result);
-			dialog.dismiss();
 		}
 
 		@Override
@@ -219,6 +271,15 @@ public class HomeActivity extends Activity implements MovieListFragment.OnFragme
 			dialog.setProgress(values[0]);
 		}
 		
+	}
+	
+	public boolean isConnectedOnline(){
+		ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+		if(networkInfo != null && networkInfo.isConnected()){
+			return true;
+		}
+		return false;
 	}
 
 	@Override
@@ -230,4 +291,6 @@ public class HomeActivity extends Activity implements MovieListFragment.OnFragme
 	public Context getContext() {
 		return this;
 	}
+	
+	
 }

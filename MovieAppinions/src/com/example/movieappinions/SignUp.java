@@ -5,6 +5,9 @@ import com.parse.ParseUser;
 import com.parse.SignUpCallback;
 
 import android.app.Activity;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -45,52 +48,57 @@ public class SignUp extends Activity {
 			
 			@Override
 			public void onClick(View v) {
-				ParseUser user = new ParseUser();
-				if(currentUser != null){
-					
-					Toast.makeText(SignUp.this, "Already Logged in to: " + currentUser.getUsername(), Toast.LENGTH_LONG).show();
-				}
-				else if(firstName.getText().length() == 0){
-					Toast.makeText(SignUp.this, "Insert First Name", Toast.LENGTH_LONG).show();
-				}
-				else if(lastName.getText().length() == 0){
-					Toast.makeText(SignUp.this, "Insert Last Name", Toast.LENGTH_LONG).show();
-				}
-				else if(phoneNumber.getText().length() == 0){
-					Toast.makeText(SignUp.this, "Insert Phone Number", Toast.LENGTH_LONG).show();
-				}
-				else if(password.getText().length() == 0){
-					Toast.makeText(SignUp.this, "Insert Password", Toast.LENGTH_LONG).show();
-				}
-				else if(confirm.getText().length() == 0){
-					Toast.makeText(SignUp.this, "Insert Password Confirmation", Toast.LENGTH_LONG).show();
-				}
-				else if(!password.getText().toString().equals(confirm.getText().toString())){
-					Toast.makeText(SignUp.this, "Passwords Do Not Match", Toast.LENGTH_LONG).show();
+				if(!isConnectedOnline()){
+					Toast.makeText(SignUp.this, "Not Connected to Internet", Toast.LENGTH_LONG).show();
 				}
 				else{
-					user.setUsername(phoneNumber.getText().toString());
-					user.setPassword(password.getText().toString());
-					user.put("Name", firstName.getText().toString() + " " + lastName.getText().toString());
-					user.signUpInBackground(new SignUpCallback() {
+					ParseUser user = new ParseUser();
+					if(currentUser != null){
 						
-						@Override
-						public void done(ParseException e) {
-							if(e == null){
-								Log.d("demo", "good?");
-								Toast.makeText(SignUp.this, "Succesfully signed up", Toast.LENGTH_LONG).show();
-								currentUser = ParseUser.getCurrentUser();
-								finish();
-							}
-							else{
-								Log.d("demo", "error");
-								if(e.getCode() ==  ParseException.USERNAME_TAKEN){
-									Toast.makeText(SignUp.this, "Email Exists", Toast.LENGTH_LONG).show();
+						Toast.makeText(SignUp.this, "Already Logged in to: " + currentUser.getUsername(), Toast.LENGTH_LONG).show();
+					}
+					else if(firstName.getText().length() == 0){
+						Toast.makeText(SignUp.this, "Insert First Name", Toast.LENGTH_LONG).show();
+					}
+					else if(lastName.getText().length() == 0){
+						Toast.makeText(SignUp.this, "Insert Last Name", Toast.LENGTH_LONG).show();
+					}
+					else if(phoneNumber.getText().length() == 0){
+						Toast.makeText(SignUp.this, "Insert Phone Number", Toast.LENGTH_LONG).show();
+					}
+					else if(password.getText().length() == 0){
+						Toast.makeText(SignUp.this, "Insert Password", Toast.LENGTH_LONG).show();
+					}
+					else if(confirm.getText().length() == 0){
+						Toast.makeText(SignUp.this, "Insert Password Confirmation", Toast.LENGTH_LONG).show();
+					}
+					else if(!password.getText().toString().equals(confirm.getText().toString())){
+						Toast.makeText(SignUp.this, "Passwords Do Not Match", Toast.LENGTH_LONG).show();
+					}
+					else{
+						user.setUsername(phoneNumber.getText().toString());
+						user.setPassword(password.getText().toString());
+						user.put("Name", firstName.getText().toString() + " " + lastName.getText().toString());
+						user.signUpInBackground(new SignUpCallback() {
+							
+							@Override
+							public void done(ParseException e) {
+								if(e == null){
+									Log.d("demo", "good?");
+									Toast.makeText(SignUp.this, "Succesfully signed up", Toast.LENGTH_LONG).show();
+									currentUser = ParseUser.getCurrentUser();
+									finish();
+								}
+								else{
+									Log.d("demo", "error");
+									if(e.getCode() ==  ParseException.USERNAME_TAKEN){
+										Toast.makeText(SignUp.this, "Email Exists", Toast.LENGTH_LONG).show();
+									}
 								}
 							}
-						}
-					});
-				}				
+						});
+					}
+				}
 			}
 		});
 		
@@ -100,5 +108,14 @@ public class SignUp extends Activity {
 	public void onBackPressed() {
 		super.onBackPressed();
 		finish();
+	}
+	
+	public boolean isConnectedOnline(){
+		ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+		if(networkInfo != null && networkInfo.isConnected()){
+			return true;
+		}
+		return false;
 	}
 }

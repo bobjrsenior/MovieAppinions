@@ -16,6 +16,9 @@ import org.xmlpull.v1.XmlPullParserException;
 
 
 
+
+
+
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
@@ -42,6 +45,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -65,9 +69,10 @@ public class MovieListFragment extends Fragment {
 	EditText itemText;
 	ListView textListView;
 	Intent i;
-	ParseQueryAdapter<ParseObject> adapter;
+	FriendListViewAdapter adapter;
 	ArrayAdapter<Movie> moviesAdapter;
 	ArrayList<Movie> movies;
+	ArrayList<Contact> contacts;
 	AlertDialog alertDialog;
 	AlertDialog.Builder alertDialogBuilder;
 	 
@@ -117,10 +122,18 @@ public class MovieListFragment extends Fragment {
 		super.onActivityCreated(savedInstanceState);
 		Log.d("demo", "onActivityCreated");
 		alertDialogBuilder = new AlertDialog.Builder(mListener.getContext());
-		alertDialogBuilder.setTitle("Loading Movies...")
+		if(type.equals("Search")){
+			alertDialogBuilder.setTitle("Loading Movies...")
+				.setIcon(R.drawable.app_logo)
+				.setMessage("")
+				.setCancelable((false));
+		}
+		else if(type.equals("Friends")){
+			alertDialogBuilder.setTitle("Loading Friends...")
 			.setIcon(R.drawable.app_logo)
 			.setMessage("")
 			.setCancelable((false));
+		}
 
 	}
 
@@ -128,11 +141,12 @@ public class MovieListFragment extends Fragment {
 	public void onStart() {
 		super.onStart();
 		showDialog();
-		Log.d("demo", "G:" + type);
 		Log.d("demo", "onstart");
 		if(type.equals("Search")){
-			Log.d("demo", "startRetrieve");
 			retrieveMovies();
+		}
+		else if(type.equals("Friends")){
+			retrieveContacts();
 		}
         //alertDialog.dismiss();
 	}
@@ -141,14 +155,42 @@ public class MovieListFragment extends Fragment {
 	 * Retrieves all contacts and how many movies they have reviewed
 	 */
 	private void retrieveContacts(){
-		
+		contacts = new ArrayList<Contact>();
+		ParseQuery<ParseObject> query = ParseQuery.getQuery("Contacts");
+		query.whereEqualTo("owner", ParseUser.getCurrentUser().getUsername());
+		query.setLimit(1000);
+		query.findInBackground(new FindCallback<ParseObject>() {
+			@Override
+			public void done(List<ParseObject> contactsList, ParseException e) {
+		        if (e == null) {
+		            Log.d("score", "Retrieved " + contactsList.size() + " contacts");
+		            for(ParseObject obj : contactsList){
+		            	Log.d("demo", "a" + (contactsList == null));
+		            	Contact temp = new Contact();
+		            	
+		            	ArrayList<String> test = (ArrayList<String>) obj.get("name");
+		            	temp.setName(test.get(0));
+		            	temp.setNumber(obj.getString("phoneNum"));
+			        	contacts.add(temp);
+			        	Log.d("demo", "b");
+			        }
+			        adapter = new FriendListViewAdapter(mListener.getContext(), android.R.layout.simple_list_item_1, contacts, getFragmentManager());
+			        ((ListView) getActivity().findViewById(R.id.contacts_list)).setAdapter(adapter);
+			        
+			        alertDialog.dismiss();
+		            
+		        } else {
+		            Log.d("score", "Error: " + e.getMessage());
+		        }
+			}
+		});
 	}
 	
 	/**
 	 * Retrieved movies related to the search term
 	 */
 	private void retrieveMovies(){
-		String url = "http://api.rottentomatoes.com/api/public/v1.0/movies.json?apikey=" + APIKeys.ROTTEN_TOMATOES_API_KEY + "&q=" + searchTerm + "&page_limit=10";
+		String url = "http://api.rottentomatoes.com/api/public/v1.0/movies.json?apikey=" + APIKeys.ROTTEN_TOMATOES_API_KEY + "&q=" + searchTerm;
 		Log.d("Demo", url);
 		new GetMovies().execute(url);
 	}
@@ -157,6 +199,8 @@ public class MovieListFragment extends Fragment {
 		public void selectedItem(ParseObject obj);
 		public Context getContext();
 		public ContentResolver getContentResolver();
+		public void onBackPressed();
+		public boolean isConnectedOnline();
 	}
 
 
@@ -217,6 +261,15 @@ public class MovieListFragment extends Fragment {
 				movies = result;
 				moviesAdapter = new MovieListViewAdapter(mListener.getContext(), R.layout.movie_list_item, movies);
 				((ListView) getActivity().findViewById(R.id.contacts_list)).setAdapter(moviesAdapter);
+				Log.d("demo", "G:" + result.size());
+				if(result.size() == 0){
+					Toast.makeText(mListener.getContext(), "No Results Found", Toast.LENGTH_LONG).show();
+					mListener.onBackPressed();
+				}
+			}
+			else{
+				Toast.makeText(mListener.getContext(), "No Results Found", Toast.LENGTH_LONG).show();
+				mListener.onBackPressed();
 			}
 			
 			alertDialog.dismiss();

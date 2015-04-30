@@ -13,13 +13,14 @@ public class Movie {
 	public String plot;
 	public String thumbnailURL;
 	public String posterURL;
+	public String raURL;
 	
 	public Movie() {
 		
 	}
 
 	public Movie(int id, String title, String year, String rating, int raRating,
-			String plot, String thumbnailURL, String posterURL) {
+			String plot, String thumbnailURL, String posterURL, String raURL) {
 		super();
 		this.id = id;
 		this.title = title;
@@ -29,6 +30,7 @@ public class Movie {
 		this.plot = plot;
 		this.thumbnailURL = thumbnailURL;
 		this.posterURL = posterURL;
+		this.raURL = raURL;
 	}
 
 	public int getId() {
@@ -93,5 +95,13 @@ public class Movie {
 
 	public void setPosterURL(String posterURL) {
 		this.posterURL = posterURL;
+	}
+
+	public String getRaURL() {
+		return raURL;
+	}
+
+	public void setRaURL(String raURL) {
+		this.raURL = raURL;
 	}
 }

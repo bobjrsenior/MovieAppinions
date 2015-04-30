@@ -19,14 +19,14 @@ import android.widget.TextView;
  * Used to create the custom List View items to display movies
  * The standard adapter can't handle more complex list item layouts
  */
-public class MovieListViewAdapter  extends ArrayAdapter<Movie> {
+public class MovieListViewAdapter extends ArrayAdapter<Movie> {
 
 	Context c;
 	static List<Movie> movies;
 	int resources;
 
 	public MovieListViewAdapter(Context c, int resources, List<Movie> movies) {
-		super(c, R.layout.movie_list_item, movies);
+		super(c, android.R.layout.simple_list_item_1, movies);
 		this.c = c;
 		MovieListViewAdapter.movies = movies;
 		this.resources = resources;
@@ -48,7 +48,11 @@ public class MovieListViewAdapter  extends ArrayAdapter<Movie> {
 		((TextView) convertView.findViewById(R.id.movie_rating)).setText(movies.get(position).getRating());
 		Log.d("demo", "G:" + movies.get(position).getRaRating());
 		((TextView) convertView.findViewById(R.id.movie_ra_rating)).setText(movies.get(position).getRaRating() + "");
-		((TextView) convertView.findViewById(R.id.movie_plot)).setText(movies.get(position).getPlot());
+		String plot = movies.get(position).getPlot();
+		if(plot.length() > 150){
+			plot = plot.substring(0, 150) + "...";
+		}
+		((TextView) convertView.findViewById(R.id.movie_plot)).setText(plot);
 		Picasso.with(c).load(movies.get(position).getThumbnailURL()).error(R.drawable.ic_launcher).into((ImageView) convertView.findViewById(R.id.movie_poster));
 		
 		
