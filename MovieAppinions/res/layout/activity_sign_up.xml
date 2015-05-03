@@ -3,6 +3,7 @@
     android:id="@+id/ScrollView1"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/curtain_closed"
     tools:context="${relativePackage}.${activityClass}" >
 
     <LinearLayout
@@ -28,16 +29,19 @@
                 android:id="@+id/textView1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="#ffffff"
                 android:text="First Name:" />
 
             <EditText
                 android:id="@+id/editText1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:textColor="#ffffff"
                 android:layout_weight="1"
                 android:ems="10"
                 android:hint="Enter First Name Here"
                 android:inputType="text"
+                android:textColorHint="#c0ffffff"
                 android:nextFocusDown="@+id/editText2" />
 
         </LinearLayout>
@@ -51,6 +55,7 @@
                 android:id="@+id/textView2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="#ffffff"
                 android:text="Last Name:" />
 
             <EditText
@@ -59,6 +64,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:ems="10"
+                android:textColor="#ffffff"
+                android:textColorHint="#c0ffffff"
                 android:hint="Enter Last Name Here"
                 android:inputType="text"
                 android:nextFocusDown="@+id/editText3"
@@ -75,6 +82,7 @@
                 android:id="@+id/textView3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="#ffffff"
                 android:text="Phone Number:"
                 android:nextFocusUp="@+id/editText2"
 				android:nextFocusDown="@+id/editText4" />
@@ -83,6 +91,8 @@
                 android:id="@+id/editText3"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:textColor="#ffffff"
+                android:textColorHint="#c0ffffff"
                 android:layout_weight="1"
                 android:ems="10"
                 android:hint="Enter Phone Number Here"
@@ -99,6 +109,7 @@
                 android:id="@+id/textView4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="#ffffff"
                 android:text="Password:" />
 
             <EditText
@@ -108,7 +119,9 @@
                 android:layout_weight="1"
                 android:ems="10"
                 android:hint="Enter Password Here"
-                android:inputType="text"
+                android:textColor="#ffffff"
+                android:textColorHint="#c0ffffff"
+                android:inputType="textPassword"
                 android:nextFocusDown="@+id/editText5"
                 android:nextFocusUp="@+id/editText3" />
 
@@ -123,6 +136,7 @@
                 android:id="@+id/textView5"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="#ffffff"
                 android:text="Confirm Password:" />
 
             <EditText
@@ -132,6 +146,8 @@
                 android:layout_weight="1"
                 android:ems="10"
                 android:hint="Confirm Password"
+                android:textColor="#ffffff"
+                android:textColorHint="#c0ffffff"
                 android:inputType="textPassword"
                 android:nextFocusUp="@+id/editText4" />
         </LinearLayout>
@@ -142,17 +158,25 @@
             android:layout_weight="0.20" >
 
             <Button
-                android:id="@+id/searchButton"
+                android:id="@+id/signUpButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:background="#a0ffffff"
                 android:text="Submit" />
+
+            <TextView
+                android:id="@+id/textView6"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
 
             <Button
                 android:id="@+id/button2"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:background="#a0ffffff"
                 android:text="Cancel" />
         </LinearLayout>
     </LinearLayout>

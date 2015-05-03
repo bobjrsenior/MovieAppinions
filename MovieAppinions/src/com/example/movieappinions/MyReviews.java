@@ -10,6 +10,7 @@ import java.util.List;
 
 import org.json.JSONException;
 
+import com.example.movieappinions.MovieListFragment.OnFragmentInteractionListener;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
@@ -18,12 +19,10 @@ import com.parse.ParseUser;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Fragment;
-import android.content.ContentResolver;
-import android.content.Context;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.app.Fragment;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,13 +34,14 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
-
 /**
- * Used to show a list of movies returned by Rotten Tomatoes or a list of your friends
+ * A simple {@link Fragment} subclass. Activities that contain this fragment
+ * must implement the {@link MyReviews.OnFragmentInteractionListener} interface
+ * to handle interaction events. Use the {@link MyReviews#newInstance} factory
+ * method to create an instance of this fragment.
  *
  */
-public class MovieListFragment extends Fragment {
-	
+public class MyReviews extends Fragment {
 	String type;
 	String searchTerm;
 	EditText itemText;
@@ -53,15 +53,16 @@ public class MovieListFragment extends Fragment {
 	ArrayList<Contact> contacts;
 	AlertDialog alertDialog;
 	AlertDialog.Builder alertDialogBuilder;
+
 	 
 	private OnFragmentInteractionListener mListener;
 
-	public MovieListFragment(String type){
+	public MyReviews(String type){
 		super();
 		this.type = type;
 	}
 	
-	public MovieListFragment(String type, String searchTerm){
+	public MyReviews(String type, String searchTerm){
 		super();
 		this.type = type;
 		this.searchTerm = searchTerm;
@@ -112,8 +113,8 @@ public class MovieListFragment extends Fragment {
 			.setMessage("")
 			.setCancelable((false));
 		}
-		else if(type.equals("Favorites")){
-			alertDialogBuilder.setTitle("Loading Favorites...")
+		else if(type.equals("Reviews")){
+			alertDialogBuilder.setTitle("Loading My Reviews...")
 			.setIcon(R.drawable.app_logo)
 			.setMessage("")
 			.setCancelable((false));
@@ -132,8 +133,8 @@ public class MovieListFragment extends Fragment {
 		else if(type.equals("Friends")){
 			retrieveContacts();
 		}
-		else if(type.equals("Favorites")){
-			retrieveFavorites();
+		else if(type.equals("Reviews")){
+			retrieveReviews();
 		}
         //alertDialog.dismiss();
 	}
@@ -173,11 +174,11 @@ public class MovieListFragment extends Fragment {
 		});
 	}
 	
-	private void retrieveFavorites(){
+	private void retrieveReviews(){
 		
-		ParseQuery<ParseObject> query = ParseQuery.getQuery("Favorites");
+		
+		ParseQuery<ParseObject> query = ParseQuery.getQuery("Reviews");
 		query.whereEqualTo("username", ParseUser.getCurrentUser().getUsername());
-		//query.whereEqualTo("favourite", true);
 		query.setLimit(1000);
 		query.findInBackground(new FindCallback<ParseObject>() {
 			@Override
@@ -204,6 +205,7 @@ public class MovieListFragment extends Fragment {
 							Log.d("what","cmg");
 							mListener.displayReview("main", movies.get(position));
 						}
+
 						
 					});
 					alertDialog.dismiss();
@@ -225,15 +227,7 @@ public class MovieListFragment extends Fragment {
 		new GetMovies().execute(url);
 	}
 	
-	public interface OnFragmentInteractionListener {
-		public Context getContext();
-		public ContentResolver getContentResolver();
-		public void onBackPressed();
-		public boolean isConnectedOnline();
-		public void setTitle(CharSequence title);
-		public void displayReview(String from,Movie m);
-		public void showfriendsReview(int id);
-	}
+
 
 	public void showDialog(){
 		alertDialog = alertDialogBuilder.create();
@@ -317,16 +311,7 @@ public class MovieListFragment extends Fragment {
 	@Override
 	public void onResume() {
 		super.onResume();
-		if(type.equals("Search")){
-			mListener.setTitle("Movie Results");
-		}
-		else if(type.equals("Friends")){
-			mListener.setTitle("Your Friends");
-		}
-		else if(type.equals("Favorites")){
-			mListener.setTitle("Favorite Movies");
-		}
+		mListener.setTitle("Your Reviews");
 	}
-	
-	
+
 }

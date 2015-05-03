@@ -4,6 +4,7 @@ package com.example.movieappinions;
 import com.parse.LogInCallback;
 import com.parse.Parse;
 import com.parse.ParseException;
+import com.parse.ParseInstallation;
 import com.parse.ParseUser;
 
 import android.app.Activity;
@@ -30,6 +31,8 @@ public class MainActivity extends Activity {
 		setContentView(R.layout.activity_main);
 
 		Parse.initialize(this, APIKeys.PARSE_APPLICATION_KEY, APIKeys.PARSE_CLIENT_KEY);
+		ParseInstallation.getCurrentInstallation().saveInBackground();
+		Parse.setLogLevel(Parse.LOG_LEVEL_VERBOSE);
         //getActionBar().setTitle("Login");
         //ParseUser.logOut();
         currentUser = ParseUser.getCurrentUser();

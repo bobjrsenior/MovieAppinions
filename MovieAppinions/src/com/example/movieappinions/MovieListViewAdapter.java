@@ -8,7 +8,6 @@ import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
@@ -30,6 +29,7 @@ public class MovieListViewAdapter extends ArrayAdapter<Movie> {
 		this.c = c;
 		MovieListViewAdapter.movies = movies;
 		this.resources = resources;
+		Log.d("demo", "New Adapter");
 	}
 	
 	@Override
@@ -47,7 +47,7 @@ public class MovieListViewAdapter extends ArrayAdapter<Movie> {
 		((TextView) convertView.findViewById(R.id.movie_release_date)).setText(movies.get(position).getYear());
 		((TextView) convertView.findViewById(R.id.movie_rating)).setText(movies.get(position).getRating());
 		Log.d("demo", "G:" + movies.get(position).getRaRating());
-		((TextView) convertView.findViewById(R.id.movie_ra_rating)).setText(movies.get(position).getRaRating() + "");
+		((TextView) convertView.findViewById(R.id.movie_ra_rating)).setText(movies.get(position).getRaRating() + "/100");
 		String plot = movies.get(position).getPlot();
 		if(plot.length() > 150){
 			plot = plot.substring(0, 150) + "...";
@@ -55,14 +55,6 @@ public class MovieListViewAdapter extends ArrayAdapter<Movie> {
 		((TextView) convertView.findViewById(R.id.movie_plot)).setText(plot);
 		Picasso.with(c).load(movies.get(position).getThumbnailURL()).error(R.drawable.ic_launcher).into((ImageView) convertView.findViewById(R.id.movie_poster));
 		
-		
-		convertView.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				
-			}
-		});
 		return convertView;
 	}
 

@@ -11,13 +11,15 @@
     <TextView
         android:id="@+id/friendName"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:background="@drawable/back"
         android:text="@string/hello_blank_fragment" />
-    
+
     <ListView
-	    android:id="@+id/friend_review_list"
-	    android:layout_width="match_parent"
-	    android:layout_height="match_parent" />
+        android:id="@+id/friend_review_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1" />
 
 </LinearLayout>

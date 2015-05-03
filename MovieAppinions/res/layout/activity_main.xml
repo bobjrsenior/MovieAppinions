@@ -3,7 +3,7 @@
     android:id="@+id/LinearLayout2"
     android:layout_width="match_parent"
     android:layout_height="fill_parent"
-    android:background="@android:color/background_light"
+    android:background="@drawable/curtain_closed"
     android:orientation="vertical"
     tools:context="${relativePackage}.${activityClass}" >
 
@@ -26,6 +26,7 @@
             android:id="@+id/textView1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="#ffffff"
             android:text="Phone Number:" />
 
         <EditText
@@ -35,6 +36,8 @@
             android:layout_weight="1"
             android:ems="10"
             android:hint="Enter Number Here"
+            android:textColor="#ffffff"
+            android:textColorHint="#c0ffffff"
             android:inputType="phone" >
 
             <requestFocus />
@@ -50,6 +53,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingRight="30dp"
+            android:textColor="#ffffff"
             android:text="Password:" />
 
         <EditText
@@ -59,13 +63,16 @@
             android:layout_weight="1"
             android:ems="10"
             android:hint="Enter Password Here"
+            android:textColor="#ffffff"
+            android:textColorHint="#c0ffffff"
             android:inputType="textPassword" />
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1" >
+        android:layout_weight="1"
+        android:orientation="horizontal" >
 
         <Button
             android:id="@+id/loginButton"
@@ -73,7 +80,14 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_weight="1"
+            android:background="#a0ffffff"
             android:text="Log In" />
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
 
         <Button
             android:id="@+id/button2"
@@ -81,6 +95,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_weight="1"
+            android:background="#a0ffffff"
             android:text="Create New" />
     </LinearLayout>
 

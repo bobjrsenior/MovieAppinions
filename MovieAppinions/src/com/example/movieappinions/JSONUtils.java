@@ -6,6 +6,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.parse.ParseObject;
+
 import android.util.Log;
 
 public class JSONUtils {
@@ -17,6 +19,27 @@ public class JSONUtils {
 		 */
 		public static Movie parseMovie(String in) throws JSONException{
 			return parseMovie(new JSONObject(in));
+		}
+		
+		/**
+		 * Parses a movie from Parse
+		 * @return A Movie obhect representing a Movie Parse Object 
+		 * @throws JSONException
+		 */
+		public static Movie parseMovie(ParseObject obj){
+			Log.d("demo", "Parsing:");
+			Movie movie = new Movie();
+			movie.setId(obj.getInt("movieId"));
+			movie.setPlot(obj.getString("moviePlot"));
+			movie.setTitle(obj.getString("movieTitle"));
+			movie.setPosterURL(obj.getString("moviePosterUrl"));
+			movie.setThumbnailURL(obj.getString("movieThumbnailURL"));
+			movie.setRaRating(obj.getInt("movieRaRating"));
+			movie.setRating(obj.getString("movieRating"));
+			movie.setYear(obj.getString("movieReleaseYear"));
+			movie.setRaURL(obj.getString("rottenLink"));
+			
+			return movie;
 		}
 		
 		/**
@@ -61,6 +84,20 @@ public class JSONUtils {
 			JSONArray moviesArr = root.getJSONArray("movies");
 			for(int e = 0; e < moviesArr.length(); e ++){
 				movies.add(parseMovie(moviesArr.getJSONObject(e)));
+			}
+			return movies;
+		}
+		
+		/**
+		 * Returns a list of Parse Movie Objects based on data retrieved from Parse
+		 * @param in ParseObject Array representing Parse Movies
+		 * @return A list of movie objects
+		 * @throws JSONException
+		 */
+		public static ArrayList<Movie> parseMovies(ArrayList<ParseObject> in) throws JSONException{
+			ArrayList<Movie> movies = new ArrayList<Movie>();
+			for(ParseObject obj : in){
+				movies.add(parseMovie(obj));
 			}
 			return movies;
 		}

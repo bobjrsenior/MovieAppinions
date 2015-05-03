@@ -1,6 +1,5 @@
 package com.example.movieappinions;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import android.app.FragmentManager;
@@ -11,24 +10,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
-
-import com.example.movieappinions.MovieListFragment.OnFragmentInteractionListener;
-import com.example.movieappinions.R.id;
-import com.squareup.picasso.Picasso;
 
 public class FriendListViewAdapter extends ArrayAdapter<Contact> {
 	Context c;
 	static List<Contact> friends;
 	int resources;
 	private FragmentManager fragmentManager;
-	private int position_cur;
-	
+
 	public FriendListViewAdapter(Context c, int resources, List<Contact> friends, FragmentManager fragmentManager) {
 		super(c, R.layout.friends_list_item, friends);
 		this.c = c;
 		FriendListViewAdapter.friends = friends;
+		Log.d("demo", ":" + friends.size());
 		this.resources = resources;
 		this.fragmentManager = fragmentManager;
 	}
@@ -39,23 +33,30 @@ public class FriendListViewAdapter extends ArrayAdapter<Contact> {
 			LayoutInflater layoutView = (LayoutInflater) c
 					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-			convertView = layoutView.inflate(R.layout.movie_list_item,
+			convertView = layoutView.inflate(R.layout.friends_list_item,
 					parent, false);
 		}
 		
 		//Populate the view
 		((TextView) convertView.findViewById(R.id.friend)).setText(friends.get(position).getName());
-		position_cur = position;
-		convertView.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				fragmentManager.beginTransaction()
-				.replace(R.id.LinearLayout1, new FriendReviewFragment(friends.get(position_cur).getName()), "friend_review_list")
-				.addToBackStack("friend_review_list")
-				.commit();
-			}
-		});
+		convertView.setOnClickListener(new onClickList(position));
 		return convertView;
+	}
+	
+	public class onClickList implements OnClickListener{
+
+		private int position;
+		
+		public onClickList(int position) {
+			this.position = position;
+		}
+		
+		@Override
+		public void onClick(View v) {
+			fragmentManager.beginTransaction()
+			.replace(R.id.LinearLayout1, new FriendReviewFragment(friends.get(position).getName(), friends.get(position).getNumber()), "friend_review_list")
+			.addToBackStack("friend_review_list")
+			.commit();
+		}
 	}
 }

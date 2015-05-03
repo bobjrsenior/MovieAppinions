@@ -16,6 +16,7 @@ public class Contact {
 	public Contact(String name, String number) {
 		this.name = name;
 		this.number = number;
+		this.reviews = 0;
 	}
 	
 	public Contact(ParseObject obj){
@@ -50,5 +51,7 @@ public class Contact {
 		return name + "  " + reviews;
 	}
 	
-	
+	public void incrNumber(){
+		reviews++;
+	}
 }

@@ -5,8 +5,7 @@ import java.net.URLEncoder;
 
 import com.example.movieappinions.MovieListFragment.OnFragmentInteractionListener;
 
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
+
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.Fragment;
@@ -32,17 +31,6 @@ public class MovieSearchFragment extends Fragment {
 
 	private OnFragmentInteractionListener mListener;
 
-	/**
-	 * Use this factory method to create a new instance of this fragment using
-	 * the provided parameters.
-	 *
-	 * @param param1
-	 *            Parameter 1.
-	 * @param param2
-	 *            Parameter 2.
-	 * @return A new instance of fragment MovieSearchFragment.
-	 */
-	// TODO: Rename and change types and number of parameters
 	public static MovieSearchFragment newInstance(String param1, String param2) {
 		MovieSearchFragment fragment = new MovieSearchFragment();
 		return fragment;
@@ -109,5 +97,13 @@ public class MovieSearchFragment extends Fragment {
 			}
 		});
 	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		mListener.setTitle("Search Movies");
+	}
+	
+	
 
 }

@@ -1,14 +1,13 @@
 package com.example.movieappinions;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
+import com.parse.ParsePush;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
-import com.parse.internal.AsyncCallback;
+import com.parse.SaveCallback;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -18,7 +17,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.opengl.Visibility;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.ContactsContract;
@@ -27,7 +25,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 public class HomeActivity extends Activity implements MovieListFragment.OnFragmentInteractionListener{
@@ -40,6 +37,16 @@ public class HomeActivity extends Activity implements MovieListFragment.OnFragme
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_home);
+		ParsePush.subscribeInBackground("P" + ParseUser.getCurrentUser().getUsername(), new SaveCallback() {
+			  @Override
+			  public void done(ParseException e) {
+			    if (e == null) {
+			      Log.d("com.parse.push", "successfully subscribed to the broadcast channel.");
+			    } else {
+			      Log.e("com.parse.push", "failed to subscribe for push", e);
+			    }
+			  }
+			});
 		
 		myReviews = (ImageView) findViewById(R.id.imageView1);
 		favorites = (ImageView) findViewById(R.id.imageView2);
@@ -63,13 +70,18 @@ public class HomeActivity extends Activity implements MovieListFragment.OnFragme
 			
 			@Override
 			public void onClick(View v) {
-				//Intent i = new Intent(HomeActivity.this, HomeActivity.class);
-				//startActivity(i);
 				if(!isConnectedOnline()){
 					Toast.makeText(HomeActivity.this, "Not Connected to Internet", Toast.LENGTH_LONG).show();
 				}
 				else{
-					
+					getFragmentManager().beginTransaction()
+					.replace(R.id.LinearLayout1, new MyReviews("Reviews"), "reviews")
+					.addToBackStack("reviews")
+					.commit();
+					layout1.setVisibility(View.GONE);
+					layout2.setVisibility(View.GONE);
+					layout3.setVisibility(View.GONE);
+					layout4.setVisibility(View.GONE);
 				}
 			}
 		});
@@ -77,22 +89,25 @@ public class HomeActivity extends Activity implements MovieListFragment.OnFragme
 			
 			@Override
 			public void onClick(View v) {
-				//Intent i = new Intent(HomeActivity.this, HomeActivity.class);
-				//startActivity(i);			
 				if(!isConnectedOnline()){
 					Toast.makeText(HomeActivity.this, "Not Connected to Internet", Toast.LENGTH_LONG).show();
 				}
 				else{
-					
+					getFragmentManager().beginTransaction()
+					.replace(R.id.LinearLayout1, new MovieListFragment("Favorites"), "favorites")
+					.addToBackStack("favorites")
+					.commit();
+					layout1.setVisibility(View.GONE);
+					layout2.setVisibility(View.GONE);
+					layout3.setVisibility(View.GONE);
+					layout4.setVisibility(View.GONE);
 				}
 			}
 		});
 		search.setOnClickListener(new OnClickListener() {
 			
 			@Override
-			public void onClick(View v) {
-				//Intent i = new Intent(HomeActivity.this, HomeActivity.class);
-				//startActivity(i);			
+			public void onClick(View v) {	
 				getFragmentManager().beginTransaction()
 				.add(R.id.LinearLayout1, new MovieSearchFragment(), "movie_search")
 				.addToBackStack("movie_list")
@@ -112,8 +127,8 @@ public class HomeActivity extends Activity implements MovieListFragment.OnFragme
 				}
 				else{
 					getFragmentManager().beginTransaction()
-					.add(R.id.LinearLayout1, new MovieListFragment("Friends"), "contacts_list")
-					.addToBackStack("contacts_list")
+					.add(R.id.LinearLayout1, new FriendsReviewList("allreview",0), "friends_review")
+					.addToBackStack("friends_review")
 					.commit();
 					layout1.setVisibility(View.GONE);
 					layout2.setVisibility(View.GONE);
@@ -127,6 +142,16 @@ public class HomeActivity extends Activity implements MovieListFragment.OnFragme
 			@Override
 			public void onClick(View v) {
 				Intent i = new Intent(HomeActivity.this, MainActivity.class);
+				ParsePush.unsubscribeInBackground("P" + ParseUser.getCurrentUser().getUsername(), new SaveCallback() {
+					  @Override
+					  public void done(ParseException e) {
+					    if (e == null) {
+					      Log.d("com.parse.push", "successfully subscribed to the broadcast channel.");
+					    } else {
+					      Log.e("com.parse.push", "failed to subscribe for push", e);
+					    }
+					  }
+					});
 				ParseUser.logOut();
 				finish();
 				startActivity(i);				
@@ -136,8 +161,6 @@ public class HomeActivity extends Activity implements MovieListFragment.OnFragme
 			
 			@Override
 			public void onClick(View v) {
-				//Intent i = new Intent(HomeActivity.this, HomeActivity.class);
-				//startActivity(i);
 				if(!isConnectedOnline()){
 					Toast.makeText(HomeActivity.this, "Not Connected to Internet", Toast.LENGTH_LONG).show();
 				}
@@ -159,6 +182,7 @@ public class HomeActivity extends Activity implements MovieListFragment.OnFragme
 				layout2.setVisibility(View.VISIBLE);
 				layout3.setVisibility(View.VISIBLE);
 				layout4.setVisibility(View.VISIBLE);
+				setTitle("Home Activity");
 			}
 		}
 		else{
@@ -228,17 +252,24 @@ public class HomeActivity extends Activity implements MovieListFragment.OnFragme
 	                               new String[]{id}, null);
 	                     if (pCur.moveToNext()) {
 	                         String phoneNum = pCur.getString(pCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-	                         Log.d("phoneNum", phoneNum);
 	                         if(phoneNum.length() > 10){
-	                        	 phoneNum = phoneNum.substring(phoneNum.length() - 10);
+	                        	 if(phoneNum.substring(0,1).equals("+")){
+	                        		 phoneNum = phoneNum.substring(phoneNum.length() - 10);
+	                        	 }
+	                        	 else{
+	                        		 Log.d("demo", "Phone O: " + phoneNum);
+	                        		 phoneNum = phoneNum.replaceAll("[(|)| |-]", "");
+	                        		 Log.d("demo", "Phone C: " + phoneNum);
+	                        	 }
 	                         }
 	                         ParseObject contact = new ParseObject("Contacts");
-	                         Log.d("demo", ":" + (contact == null));
-	                         contact.add("owner", ParseUser.getCurrentUser().getUsername());
-	                         contact.add("name", name);
-	                         contact.add("phoneNum", phoneNum);
+	                         contact.put("owner", ParseUser.getCurrentUser().getUsername());
+	                         contact.put("name", name);
+	                         contact.put("phoneNum", phoneNum);
+	                         if(name.equals("AppinionsTest")){
+	                        	 Log.d("phoneNum", phoneNum + ":");
+	                         }
 	                         for(ParseObject obj : users){
-	             				Log.d("demo","G:" +  obj.getString("username") + ":" + phoneNum);
 	             				if(obj.getString("username").equals(phoneNum)){
 	             					contact.saveInBackground();
 	             				}
@@ -283,14 +314,24 @@ public class HomeActivity extends Activity implements MovieListFragment.OnFragme
 	}
 
 	@Override
-	public void selectedItem(ParseObject obj) {
-	
-	}
-
-	@Override
 	public Context getContext() {
 		return this;
 	}
 	
-	
+	@Override
+	public void showfriendsReview(int id) {
+		getFragmentManager().beginTransaction()
+    	.replace(R.id.LinearLayout1, new FriendsReviewList("review",id),"friendsReview")
+    	.addToBackStack(null)
+    	.commit();
+	}
+
+	@Override
+	public void displayReview(String from, Movie movie) {
+		Log.d("here","but no");
+		getFragmentManager().beginTransaction()
+    	.replace(R.id.LinearLayout1, new MovieReviewFragment(from,movie),"movieReview")
+    	.addToBackStack(null)
+    	.commit();
+	}
 }

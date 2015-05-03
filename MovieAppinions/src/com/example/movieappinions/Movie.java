@@ -14,7 +14,24 @@ public class Movie {
 	public String thumbnailURL;
 	public String posterURL;
 	public String raURL;
-	
+	public String reviewBy;
+	public String reviewerName;
+	public String getReviewerName() {
+		return reviewerName;
+	}
+
+	public void setReviewerName(String reviewerName) {
+		this.reviewerName = reviewerName;
+	}
+
+	public String getReviewBy() {
+		return reviewBy;
+	}
+
+	public void setReviewBy(String reviewBy) {
+		this.reviewBy = reviewBy;
+	}
+
 	public Movie() {
 		
 	}

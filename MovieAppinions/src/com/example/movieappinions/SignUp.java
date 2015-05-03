@@ -34,7 +34,7 @@ public class SignUp extends Activity {
 		lastName = (EditText) findViewById(R.id.editText2);
 		phoneNumber =(EditText) findViewById(R.id.editText3);
 		cancel = (Button) findViewById(R.id.button2);
-		create = (Button) findViewById(R.id.searchButton);
+		create = (Button) findViewById(R.id.signUpButton);
 		
 		cancel.setOnClickListener(new OnClickListener() {
 
@@ -118,4 +118,6 @@ public class SignUp extends Activity {
 		}
 		return false;
 	}
+	
+	
 }
